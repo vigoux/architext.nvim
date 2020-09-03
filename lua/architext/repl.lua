@@ -1,18 +1,11 @@
 local ts = vim.treesitter
 local a = vim.api
+local edit = require'architext.edit'
 
 local M = {}
 
 local QUERY_STATE = 1
 local CAPTURE_STATE = 2
-
-local function node_to_lsp_range(node)
-  local start_line, start_col, end_line, end_col = node:range()
-  local rtn = {}
-  rtn.start = { line = start_line, character = start_col }
-  rtn['end'] = { line = end_line, character = end_col }
-  return rtn
-end
 
 local function get_prompt_funcs(repl_buf, buf, win)
 
@@ -41,27 +34,7 @@ local function get_prompt_funcs(repl_buf, buf, win)
 
     [CAPTURE_STATE] = function()
       if not current_query.captures[capture_index] then
-        -- We need to compute and apply the changes now
-        local edits = {}
-
-        local buf_line_count = a.nvim_buf_line_count(buf)
-
-        for pattern, match in current_query:iter_matches(parser:parse():root(), buf,
-                                                         0, buf_line_count + 1) do
-          for id,node in pairs(match) do
-            local newText = capture_change_table[id]
-
-            if newText and #newText > 0 then
-              table.insert(edits, {
-                range = node_to_lsp_range(node),
-                newText = newText
-              })
-            end
-          end
-        end
-
-        vim.lsp.util.apply_text_edits(edits, buf)
-
+        edit.edit(buf, parser, current_query, capture_change_table)
         current_query = nil
         return QUERY_STATE
       else
