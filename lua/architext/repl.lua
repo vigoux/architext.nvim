@@ -91,6 +91,7 @@ local function get_prompt_funcs(repl_buf, buf, win)
   local function interrupt_cb()
     a.nvim_win_close(win, true)
     a.nvim_buf_set_option(repl_buf, 'buftype', 'nofile')
+    vim.cmd(string.format("bwipe! %d", repl_buf))
   end
 
   return prompt_cb, interrupt_cb
