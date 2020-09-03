@@ -1,3 +1,5 @@
+[![asciicast](https://asciinema.org/a/357694.svg)](https://asciinema.org/a/357694)
+
 # architext.nvim
 
 A structural editing plugin for neovim, powered by treesitter.
