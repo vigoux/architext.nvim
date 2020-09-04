@@ -28,12 +28,12 @@ function M.complete(cmdline, cursorpos)
   local buf = a.nvim_get_current_buf()
 
   -- Remove command name
-  local text = cmdline:gsub("^%w+", "")
+  local text = cmdline:gsub("^.-%w", "")
+
+  print(text)
 
   local parser = ts.get_parser(buf)
   local query_text, parts = split_argument(text)
-
-  local completions = {}
 
   if #parts > 0 then
     local function make_items(cname, query, preffix, suffix)
@@ -69,6 +69,7 @@ function M.complete(cmdline, cursorpos)
   else
     -- Complete node names
     -- Extract last node and determine type first
+    local completions = {}
     local language = ts.inspect_language(parser.lang)
 
     local start_suffix, _, suffix = text:find("(%w*)$")
@@ -85,14 +86,13 @@ function M.complete(cmdline, cursorpos)
         if last_char == [["]] and not is_non_terminal then
           table.insert(completions, preffix .. name .. [["]])
         elseif last_char == "(" and is_non_terminal then
-          print(name, suffix)
           table.insert(completions, preffix .. name)
         end
       end
     end
-  end
 
-  return completions
+    return completions
+  end
 end
 
 -- Parses things like
