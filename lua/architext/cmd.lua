@@ -80,13 +80,21 @@ function M.complete(cmdline, cursorpos)
     local last_char = preffix:sub(#preffix)
 
     -- Symbol desc is a table {name, is_terminal}
-    for _, symbol_desc in pairs(language.symbols) do
-      local name, is_non_terminal = unpack(symbol_desc)
-      if vim.startswith(name, suffix) then
-        if last_char == [["]] and not is_non_terminal then
-          table.insert(completions, preffix .. name .. [["]])
-        elseif last_char == "(" and is_non_terminal then
-          table.insert(completions, preffix .. name)
+    if last_char == [["]] or last_char == "(" then
+      for _, symbol_desc in pairs(language.symbols) do
+        local name, is_non_terminal = unpack(symbol_desc)
+        if vim.startswith(name, suffix) then
+          if last_char == [["]] and not is_non_terminal then
+            table.insert(completions, preffix .. name .. [["]])
+          elseif last_char == "(" and is_non_terminal then
+            table.insert(completions, preffix .. name)
+          end
+        end
+      end
+    else
+      for _, field in ipairs(language.fields) do
+        if vim.startswith(field, suffix) then
+          table.insert(completions, preffix .. field .. ":")
         end
       end
     end
