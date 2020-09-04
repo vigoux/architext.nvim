@@ -1,4 +1,4 @@
-[![asciicast](https://asciinema.org/a/357694.svg)](https://asciinema.org/a/357694)
+[![asciicast](https://asciinema.org/a/357767.svg)](https://asciinema.org/a/357767)
 
 # architext.nvim
 
