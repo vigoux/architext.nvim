@@ -19,11 +19,12 @@ local function parse_replacement(text, query)
   local to_evaluate = {}
 
   repeat
-    local start, stop, rest, capture = string.find(text_left, "(.-)(@[a-zA-Z.]+)")
+    local start, stop, pref, capture = string.find(text_left, "(.-)(@[a-zA-Z.]+)")
 
     -- We have a capture here
-    if start and stop and rest and capture then
-      table.insert(to_evaluate, rest)
+    if start and stop and pref and capture then
+      local pref_corr = pref:gsub("@@", "@")
+      table.insert(to_evaluate, pref_corr)
       -- Strip @
       capture = capture:sub(2)
 
@@ -34,7 +35,8 @@ local function parse_replacement(text, query)
 
       text_left = text_left:sub(stop + 1)
     else
-      table.insert(to_evaluate, text_left)
+      local text_corr = text_left:gsub("@@", "@")
+      table.insert(to_evaluate, text_corr)
       text_left = ""
     end
   until not text_left or #text_left == 0
@@ -56,7 +58,7 @@ local function evaluate_change(buf, change, match)
   local final_text = ""
 
   for _, thing in ipairs(change) do
-    if type(thing) == "number" then
+    if type(thing) == "number" and match[thing] then
       final_text = final_text .. ts_q.get_node_text(match[thing], buf)
     else
       final_text = final_text .. thing
@@ -66,16 +68,17 @@ local function evaluate_change(buf, change, match)
   return final_text
 end
 
-function M.edit(buf, parser, query, capture_changes)
+function M.edit(buf, parser, query, capture_changes, start_row, end_row)
+  local start_row = start_row or 0
+  local end_row = end_row or a.nvim_buf_line_count(buf) + 1
+
   -- We need to compute and apply the changes now
   local edits = {}
-
-  local buf_line_count = a.nvim_buf_line_count(buf)
 
   local compiled_changes = compile_changes(capture_changes, query)
 
   for pattern, match in query:iter_matches(parser:parse():root(), buf,
-    0, buf_line_count + 1) do
+    start_row, end_row) do
 
     for id, replacement in pairs(compiled_changes) do
       local newText = evaluate_change(buf, replacement, match)
