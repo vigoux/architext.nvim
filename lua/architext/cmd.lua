@@ -127,7 +127,7 @@ function M.run(text, start_row, end_row)
   if not parser then return end
 
   local query, changes = parse_argument(parser, text)
-  edit.edit(buf, parser, query, changes, start_row - 1, end_row - 1)
+  edit.edit(buf, parser, query, changes, start_row - 1, end_row) -- Because end_row is exclusive
 end
 
 return M
