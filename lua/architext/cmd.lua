@@ -17,6 +17,11 @@ end
 
 function M.complete(cmdline, cursorpos)
 
+  local function preffix_massage(preffix)
+    local pref_words = vim.split(preffix, " ", true)
+    return pref_words[#pref_words]
+  end
+
   -- Strip the end of the cmdline
   local cmdline = cmdline:sub(1, cursorpos)
 
@@ -31,11 +36,36 @@ function M.complete(cmdline, cursorpos)
   local completions = {}
 
   if #parts > 0 then
+    local function make_items(cname, query, preffix, suffix)
+      local preffix = preffix_massage(preffix)
+      local completions = {}
+      for _, cap in ipairs(query.captures) do
+        if vim.startswith(cap, cname) then
+          table.insert(completions, preffix .. cap .. (suffix or ""))
+        end
+      end
+
+      return completions
+    end
+
     -- Complete capture names if start of string or after @
     local part = parts[#parts]
     local query = ts.parse_query(parser.lang, query_text)
 
-    -- TODO(vigoux): actually complete here
+    -- Two case, either we are at the start of the string, or after an @
+    local start_cname, end_cname, cname = part:find("^(%w*)")
+
+    if end_cname == #part then
+      -- Start of the string
+      return make_items(cname, query, preffix_massage(text:sub(1, #text - #part)), ":")
+    else
+      local start_cname, end_cname, cname = part:find("@(%w*)")
+      if start_cname and end_cname and cname then
+        return make_items(cname, query, preffix_massage(text:sub(1, #text - #cname)))
+      else
+        return {}
+      end
+    end
   else
     -- Complete node names
     -- Extract last node and determine type first
@@ -44,10 +74,7 @@ function M.complete(cmdline, cursorpos)
     local start_suffix, _, suffix = text:find("(%w*)$")
 
     -- This needs massage to be used
-    local preffix = text:sub(1, start_suffix - 1)
-    local pref_words = vim.split(preffix, " ", true)
-    preffix = pref_words[#pref_words]
-
+    local preffix = preffix_massage(text:sub(1, start_suffix - 1))
 
     local last_char = preffix:sub(#preffix)
 
