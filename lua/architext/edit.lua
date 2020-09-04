@@ -1,5 +1,6 @@
 local ts = vim.treesitter
 local ts_q = require'vim.treesitter.query'
+local a_trans = require'architext.transform'
 local a = vim.api
 
 local M = {}
@@ -19,7 +20,7 @@ local function parse_replacement(text, query)
   local to_evaluate = {}
 
   repeat
-    local start, stop, pref, capture = string.find(text_left, "(.-)(@[a-zA-Z.]+)")
+    local start, stop, pref, capture = string.find(text_left, "(.-)(@[a-zA-Z.:]+)")
 
     -- We have a capture here
     if start and stop and pref and capture then
@@ -28,10 +29,13 @@ local function parse_replacement(text, query)
       -- Strip @
       capture = capture:sub(2)
 
+      -- Maybe there is the transform
+      local capture, transform = unpack(vim.split(capture, ":", true))
+
       local index = vim.fn.index(query.captures, capture)
       if index < 0 then return {} end
 
-      table.insert(to_evaluate, index + 1)
+      table.insert(to_evaluate, {capt = index + 1, trans = transform})
 
       text_left = text_left:sub(stop + 1)
     else
@@ -58,8 +62,9 @@ local function evaluate_change(buf, change, match)
   local final_text = ""
 
   for _, thing in ipairs(change) do
-    if type(thing) == "number" and match[thing] then
-      final_text = final_text .. ts_q.get_node_text(match[thing], buf)
+    if type(thing) == "table" and thing.capt and match[thing.capt] then
+      local additional_text = a_trans.apply(thing.trans, buf, match[thing.capt])
+      final_text = final_text .. additional_text
     else
       final_text = final_text .. thing
     end
