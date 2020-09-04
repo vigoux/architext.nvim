@@ -2,6 +2,7 @@ local ts = vim.treesitter
 local a = vim.api
 local f = vim.fn
 local edit = require'architext.edit'
+local q = require'architext.query'
 
 local M = {}
 
@@ -50,7 +51,7 @@ function M.complete(cmdline, cursorpos)
 
     -- Complete capture names if start of string or after @
     local part = parts[#parts]
-    local query = ts.parse_query(parser.lang, query_text)
+    local query = q.get(parser, query_text)
 
     -- Two case, either we are at the start of the string, or after an @
     local start_cname, end_cname, cname = part:find("^(%w*)")
@@ -108,7 +109,7 @@ end
 local function parse_argument(parser, text)
   local query_text, parts = split_argument(text)
 
-  local query = ts.parse_query(parser.lang, query_text)
+  local query = q.get(parser, query_text)
   local changes = {}
 
   for _, replacement in ipairs(parts) do

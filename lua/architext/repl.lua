@@ -1,6 +1,7 @@
 local ts = vim.treesitter
 local a = vim.api
 local edit = require'architext.edit'
+local q = require'architext.query'
 
 local M = {}
 
@@ -52,7 +53,7 @@ local function get_prompt_funcs(repl_buf, buf, win)
     -- TODO(vigoux): there can be other types of queries
     -- This is a query
     if state == QUERY_STATE then
-      current_query = ts.parse_query(parser.lang, text)
+      current_query = q.get(parser, text)
     elseif state == CAPTURE_STATE then
       capture_change_table[capture_index] = text
       capture_index = capture_index + 1
