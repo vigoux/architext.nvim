@@ -31,8 +31,6 @@ function M.complete(cmdline, cursorpos)
   -- Remove command name
   local text = cmdline:gsub("^.-%w", "")
 
-  print(text)
-
   local parser = ts.get_parser(buf)
   local query_text, parts = split_argument(text)
 
@@ -80,8 +78,9 @@ function M.complete(cmdline, cursorpos)
 
     local last_char = preffix:sub(#preffix)
 
-    -- Symbol desc is a table {name, is_terminal}
     if last_char == [["]] or last_char == "(" then
+      -- Complete nodes because we start by " or (
+      -- Symbol desc is a table {name, is_terminal}
       for _, symbol_desc in pairs(language.symbols) do
         local name, is_non_terminal = unpack(symbol_desc)
         if vim.startswith(name, suffix) then
@@ -90,6 +89,13 @@ function M.complete(cmdline, cursorpos)
           elseif last_char == "(" and is_non_terminal then
             table.insert(completions, preffix .. name)
           end
+        end
+      end
+    elseif last_char == "$" then
+      -- Complete query template $
+      for _, template in ipairs(q.list_templates()) do
+        if vim.startswith(template, suffix) then
+          table.insert(completions, preffix .. template .. ":")
         end
       end
     else

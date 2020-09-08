@@ -50,6 +50,37 @@ Additional notes :
 - The delimiter can be anything, and is specified by the first character after the command
 - You can insert a literal `@` like so `@@`
 
+## Query templates
+
+You can recall query templates by starting the query argument with a `$`.
+Query templates are called like so :
+
+```
+$TEMPLATE:arg1:arg2:...
+```
+
+The `:` can be replaced by any non uppercase character (though, `:` is recommended).
+
+If you want to omit an argument :
+
+```
+$TEMPLATE::arg2:...
+```
+
+While this might seem useful, and robust, it is actually not, and no check is done on the number of
+arguments you pass to a query, and wether they are expected.
+
+### Writing templates
+
+Writing templates is easy, and follows an over-simplified snippet-like syntax, for example the
+builtin `IDENT` template looks like this :
+
+```
+((identifier) @id (#eq? @id "$1"))
+```
+
+Arguments of the template are called with `${number}`, 1-based (why not ?).
+
 # Credits
 
 Thanks @tjdevries for the name.
