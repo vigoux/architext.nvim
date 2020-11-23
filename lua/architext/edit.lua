@@ -82,7 +82,7 @@ function M.edit(buf, parser, query, capture_changes, start_row, end_row)
 
   local compiled_changes = compile_changes(capture_changes, query)
 
-  for pattern, match in query:iter_matches(parser:parse():root(), buf,
+  for pattern, match in query:iter_matches(parser:parse()[1]:root(), buf,
     start_row, end_row) do
 
     for id, replacement in pairs(compiled_changes) do

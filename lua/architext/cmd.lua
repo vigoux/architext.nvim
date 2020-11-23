@@ -69,7 +69,7 @@ function M.complete(cmdline, cursorpos)
     -- Complete node names
     -- Extract last node and determine type first
     local completions = {}
-    local language = ts.inspect_language(parser.lang)
+    local language = ts.inspect_language(parser:lang())
 
     local start_suffix, _, suffix = text:find("(%w*)$")
 

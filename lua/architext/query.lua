@@ -19,7 +19,7 @@ local function evaluate_template(name, args)
 end
 
 function M.get(parser, query)
-  if query == nil or #query == 0 then return previous_queries[parser.lang] end
+  if query == nil or #query == 0 then return previous_queries[parser:lang()] end
 
   if query:sub(1, 1) == "$" then
     -- Parse this template query
@@ -29,8 +29,8 @@ function M.get(parser, query)
     end
   end
 
-  local query = ts.parse_query(parser.lang, query)
-  previous_queries[parser.lang] = query
+  local query = ts.parse_query(parser:lang(), query)
+  previous_queries[parser:lang()] = query
   return query
 end
 
