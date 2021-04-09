@@ -4,14 +4,14 @@ local M = {}
 
 local transforms = {
   ["upper"] = function(bufnr, node)
-    local node_text = ts_q.get_node_text(node, buf)
+    local node_text = ts_q.get_node_text(node, bufnr)
     if not node_text then return end
 
     return vim.fn.toupper(node_text)
   end,
 
   ["lower"] = function(bufnr, node)
-    local node_text = ts_q.get_node_text(node, buf)
+    local node_text = ts_q.get_node_text(node, bufnr)
     if not node_text then return end
 
     return vim.fn.tolower(node_text)

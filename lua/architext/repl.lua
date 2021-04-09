@@ -72,7 +72,7 @@ local function get_prompt_funcs(repl_buf, buf, win)
 end
 
 function M.setup_repl(bufnr)
-  if not ts.get_parser(buf) then return end
+  if not ts.get_parser(bufnr) then return end
 
   local buf = bufnr or a.nvim_get_current_buf()
   vim.cmd[[split]]

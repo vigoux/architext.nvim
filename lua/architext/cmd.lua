@@ -8,7 +8,7 @@ local M = {}
 
 local function split_argument(text)
   local separator = text:sub(1, 1)
-  local text = text:sub(2)
+  text = text:sub(2)
 
   local parts = vim.split(text, separator, true)
   local query_text = table.remove(parts, 1)
@@ -24,7 +24,7 @@ function M.complete(cmdline, cursorpos)
   end
 
   -- Strip the end of the cmdline
-  local cmdline = cmdline:sub(1, cursorpos)
+  cmdline = cmdline:sub(1, cursorpos)
 
   local buf = a.nvim_get_current_buf()
 
@@ -36,7 +36,7 @@ function M.complete(cmdline, cursorpos)
 
   if #parts > 0 then
     local function make_items(cname, query, preffix, suffix)
-      local preffix = preffix_massage(preffix)
+      preffix = preffix_massage(preffix)
       local completions = {}
       for _, cap in ipairs(query.captures) do
         if vim.startswith(cap, cname) then
@@ -58,7 +58,7 @@ function M.complete(cmdline, cursorpos)
       -- Start of the string
       return make_items(cname, query, preffix_massage(text:sub(1, #text - #part)), ":")
     else
-      local start_cname, end_cname, cname = part:find("@(%w*)")
+      start_cname, end_cname, cname = part:find("@(%w*)")
       if start_cname and end_cname and cname then
         return make_items(cname, query, preffix_massage(text:sub(1, #text - #cname)))
       else

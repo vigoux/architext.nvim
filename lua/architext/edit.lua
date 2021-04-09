@@ -1,5 +1,3 @@
-local ts = vim.treesitter
-local ts_q = require'vim.treesitter.query'
 local a_trans = require'architext.transform'
 local a = vim.api
 
@@ -30,9 +28,9 @@ local function parse_replacement(text, query)
       capture = capture:sub(2)
 
       -- Maybe there is the transform
-      local capture, transform = unpack(vim.split(capture, ":", true))
+      local cname, transform = unpack(vim.split(capture, ":", true))
 
-      local index = vim.fn.index(query.captures, capture)
+      local index = vim.fn.index(query.captures, cname)
       if index < 0 then return {} end
 
       table.insert(to_evaluate, {capt = index + 1, trans = transform})
@@ -74,15 +72,15 @@ local function evaluate_change(buf, change, match)
 end
 
 function M.edit(buf, parser, query, capture_changes, start_row, end_row)
-  local start_row = start_row or 0
-  local end_row = end_row or a.nvim_buf_line_count(buf) + 1
+  start_row = start_row or 0
+  end_row = end_row or a.nvim_buf_line_count(buf) + 1
 
   -- We need to compute and apply the changes now
   local edits = {}
 
   local compiled_changes = compile_changes(capture_changes, query)
 
-  for pattern, match in query:iter_matches(parser:parse()[1]:root(), buf,
+  for _, match in query:iter_matches(parser:parse()[1]:root(), buf,
     start_row, end_row) do
 
     for id, replacement in pairs(compiled_changes) do
