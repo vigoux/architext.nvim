@@ -134,9 +134,11 @@ local function parse_argument(parser, text)
   return query, changes
 end
 
-function M.run(text, start_row, end_row)
+function M.run(text, start_row, end_row, buf)
 
-  local buf = a.nvim_get_current_buf()
+  if buf == nil then
+    buf = a.nvim_get_current_buf()
+  end
   local parser = ts.get_parser(buf)
 
   if not parser then return end
