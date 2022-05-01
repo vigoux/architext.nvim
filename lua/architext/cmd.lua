@@ -136,9 +136,7 @@ end
 
 function M.run(text, start_row, end_row, buf)
 
-  if buf == nil then
-    buf = a.nvim_get_current_buf()
-  end
+  buf = buf or a.nvim_get_current_buf()
   local parser = ts.get_parser(buf)
 
   if not parser then return end
