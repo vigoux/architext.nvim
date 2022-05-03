@@ -96,6 +96,6 @@ function M.edit(buf, parser, query, capture_changes, start_row, end_row)
     end
   end
 
-  vim.lsp.util.apply_text_edits(edits, buf)
+  vim.lsp.util.apply_text_edits(edits, buf, 'utf-8')
 end
 return M
