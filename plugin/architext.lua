@@ -11,7 +11,7 @@ local function create_command(name)
     desc = "Runs ratatoskr in the current buffer",
     force = true,
     preview = function(args, ns, buf)
-      cmd.run(args.args, args.line1, args.line2, buf)
+      cmd.run(args.args, args.line1, args.line2, buf, ns)
       return 2
     end
   })

@@ -133,7 +133,7 @@ local function parse_argument(parser, text)
   return query, changes
 end
 
-function M.run(text, start_row, end_row, buf)
+function M.run(text, start_row, end_row, buf, preview_ns)
 
   buf = buf or a.nvim_get_current_buf()
   local parser = ts.get_parser(buf)
@@ -141,6 +141,33 @@ function M.run(text, start_row, end_row, buf)
   if not parser then return end
 
   local query, changes = parse_argument(parser, text)
+
+  if preview_ns then
+    -- TODO: make the preview more interesting by displaying unset captures differently
+    local root = parser:parse()[1]:root()
+    local display = {}
+
+    for cid, _ in pairs(query.captures) do
+      if not changes[cid] or #changes[cid] == 0 then
+        table.insert(display, cid)
+        display[cid] = true
+      end
+    end
+
+    for cid, node in query:iter_captures(root, buf, start_row - 1, end_row) do
+      if display[cid] then
+        local start_row, start_col, end_row, end_col = node:range()
+        vim.api.nvim_buf_set_extmark(buf, preview_ns, start_row, start_col, {
+        end_row = end_row,
+        end_col = end_col,
+        hl_group = "Search",
+        hl_mode = "replace",
+        priority = 1000,
+        })
+      end
+    end
+  end
+
   edit.edit(buf, parser, query, changes, start_row - 1, end_row) -- Because end_row is exclusive
 end
 
