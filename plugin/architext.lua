@@ -12,6 +12,7 @@ local function create_command(name)
     force = true,
     preview = function(args, ns, buf)
       cmd.run(args.args, args.line1, args.line2, buf)
+      return 2
     end
   })
 end
