@@ -133,6 +133,19 @@ local function parse_argument(parser, text)
   return query, changes
 end
 
+M.HL_MAPPING = setmetatable({
+  "ArchitextSearch1",
+  "ArchitextSearch2",
+  "ArchitextSearch3",
+  "ArchitextSearch4",
+  "ArchitextSearch5",
+  "ArchitextSearch6",
+}, {
+  __index = function(table, key)
+    return rawget(table, (key % #table) + 1)
+  end
+})
+
 function M.run(text, start_row, end_row, buf, preview_ns)
 
   buf = buf or a.nvim_get_current_buf()
@@ -156,11 +169,11 @@ function M.run(text, start_row, end_row, buf, preview_ns)
 
     for cid, node in query:iter_captures(root, buf, start_row - 1, end_row) do
       if display[cid] then
-        local start_row, start_col, end_row, end_col = node:range()
-        vim.api.nvim_buf_set_extmark(buf, preview_ns, start_row, start_col, {
-        end_row = end_row,
+        local start, start_col, _end, end_col = node:range()
+        vim.api.nvim_buf_set_extmark(buf, preview_ns, start, start_col, {
+        end_row = _end,
         end_col = end_col,
-        hl_group = "Search",
+        hl_group = M.HL_MAPPING[cid],
         hl_mode = "replace",
         priority = 1000,
         })
