@@ -16,8 +16,7 @@ local function split_argument(text)
   return query_text, parts
 end
 
-function M.complete(cmdline, cursorpos)
-
+function M.complete(_, cmdline, cursorpos)
   local function preffix_massage(preffix)
     local pref_words = vim.split(preffix, " ", true)
     return pref_words[#pref_words]
