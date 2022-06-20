@@ -162,7 +162,6 @@ function M.run(text, start_row, end_row, buf, preview_ns)
 
     for cid, _ in pairs(query.captures) do
       if not changes[cid] or #changes[cid] == 0 then
-        table.insert(display, cid)
         display[cid] = true
       end
     end
