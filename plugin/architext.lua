@@ -10,9 +10,9 @@ local function create_command(name)
     complete = cmd.complete,
     desc = "Runs ratatoskr in the current buffer",
     force = true,
-    preview = function(args, ns, buf)
-      cmd.run(args.args, args.line1, args.line2, buf, ns)
-      return 2
+    preview = function(args, ns, _)
+      cmd.run(args.args, args.line1, args.line2, a.nvim_get_current_buf(), ns)
+      return 1
     end
   })
 end
