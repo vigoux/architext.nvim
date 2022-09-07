@@ -6,6 +6,19 @@ local q = require'architext.query'
 
 local M = {}
 
+local language_map = setmetatable({
+  tex = "latex"
+}, {
+  __index = function(table, key)
+    return rawget(table, key) or key
+  end
+})
+
+local function get_parser(bufnr)
+  bufnr = bufnr or a.nvim_get_current_buf()
+  return ts.get_parser(bufnr, language_map[a.nvim_buf_get_option(bufnr, 'filetype')])
+end
+
 local function split_argument(text)
   local separator = text:sub(1, 1)
   text = text:sub(2)
@@ -30,7 +43,7 @@ function M.complete(_, cmdline, cursorpos)
   -- Remove command name
   local text = cmdline:gsub("^.-%w", "")
 
-  local parser = ts.get_parser(buf)
+  local parser = get_parser()
   local query_text, parts = split_argument(text)
 
   if #parts > 0 then
@@ -149,7 +162,7 @@ M.HL_MAPPING = setmetatable({
 function M.run(text, start_row, end_row, buf, preview_ns)
 
   buf = buf or a.nvim_get_current_buf()
-  local parser = ts.get_parser(buf)
+  local parser = get_parser(buf)
 
   if not parser then return end
 
