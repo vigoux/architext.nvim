@@ -85,9 +85,9 @@ function M.edit(buf, parser, query, capture_changes, start_row, end_row)
 
     for id, replacement in pairs(compiled_changes) do
       local newText = evaluate_change(buf, replacement, match)
+      local ns_row, _, ne_row, _ = match[id]:range()
 
-      if newText and #newText > 0 then
-
+      if newText and #newText > 0 and ne_row >= start_row and ns_row <= end_row then
         table.insert(edits, {
           range = node_to_lsp_range(match[id]),
           newText = newText
