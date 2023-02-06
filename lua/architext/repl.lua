@@ -2,6 +2,7 @@ local ts = vim.treesitter
 local a = vim.api
 local edit = require'architext.edit'
 local q = require'architext.query'
+local utils = require'architext.utils'
 
 local M = {}
 
@@ -10,7 +11,7 @@ local CAPTURE_STATE = 2
 
 local function get_prompt_funcs(repl_buf, buf, win)
 
-  local parser = ts.get_parser(buf)
+  local parser = utils.get_parser(buf)
   local current_query
   local state = QUERY_STATE
   local capture_index = 1
@@ -72,7 +73,7 @@ local function get_prompt_funcs(repl_buf, buf, win)
 end
 
 function M.setup_repl(bufnr)
-  if not ts.get_parser(bufnr) then return end
+  if not utils.get_parser(bufnr) then return end
 
   local buf = bufnr or a.nvim_get_current_buf()
   vim.cmd[[split]]

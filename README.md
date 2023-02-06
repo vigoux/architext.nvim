@@ -9,7 +9,13 @@ A structural editing plugin for neovim, powered by treesitter.
 Use the only package manager :
 
 ```lua
-use "vigoux/architext.nvim"
+use {
+  "vigoux/architext.nvim"
+  requires = {
+    -- Not required, only used to refine the language resolution
+    "nvim-treesitter/nvim-treesitter"
+  }
+}
 ```
 
 # Usage
