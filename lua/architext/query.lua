@@ -29,7 +29,8 @@ function M.get(parser, query)
     end
   end
 
-  query = ts.parse_query(parser:lang(), query)
+  local parse_query = ts.query.parse or ts.query.parse_query
+  query = parse_query(parser:lang(), query)
   previous_queries[parser:lang()] = query
   return query
 end
