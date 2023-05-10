@@ -56,7 +56,7 @@ Additional notes :
 - The delimiter can be anything, and is specified by the first character after the command
 - You can insert a literal `@` like so `@@`
 
-## Query templates
+### Query templates
 
 You can recall query templates by starting the query argument with a `$`.
 Query templates are called like so :
@@ -86,6 +86,47 @@ builtin `IDENT` template looks like this :
 ```
 
 Arguments of the template are called with `${number}`, 1-based (why not ?).
+
+## Using the API
+
+The main function une `architext` is `architext.edit.edit`, which
+contains all the machinery for handling replacements on (non-template)
+queries.
+
+The signature is as follows:
+```lua
+edit(buf, parser, query, changes, start_row, end_row)
+```
+
+The arguments are thus:
+
+1. The buffer number where the edits take place
+2. The parser to use for that given buffer
+3. The query used as reference for matching the tree (think the first
+   part of the `:Architext` command)
+4. The actual changes to perform, in the form of a map between capture
+   names and their replacements (think, the rest of the `:Architext`
+   command): note the there _must not be the leading `@` in the
+   capture names_.
+5. The start row (inclusive)
+6. The end row (inclusive)
+
+As an example, here is the API to swap the first two arguments of
+function calls in lua:
+
+```lua
+local curbuf = vim.api.nvim_get_current_buf()
+local parser = vim.treesitter.get_parser(curbuf)
+
+local query = vim.treesitter.query.parse("lua", [[
+  (arguments 
+    . (_) @first
+    . (_) @second)
+]])
+
+require'architext.edit'.edit(curbuf, parser, query, { first =
+"@second", second = "@first" }, 0, 10)
+```
 
 # Credits
 

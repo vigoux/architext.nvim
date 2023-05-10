@@ -78,7 +78,23 @@ function M.edit(buf, parser, query, capture_changes, start_row, end_row)
   -- We need to compute and apply the changes now
   local edits = {}
 
-  local compiled_changes = compile_changes(capture_changes, query)
+  local changes
+
+  if vim.tbl_islist(capture_changes) then
+    changes = capture_changes
+  else
+    local tmp = {}
+    for cname, rep in pairs(capture_changes) do
+      local index = vim.fn.index(query.captures, cname)
+
+      assert(index >= 0, "Could not find capture index")
+      tmp[index + 1] = rep
+    end
+
+    changes = tmp
+  end
+
+  local compiled_changes = compile_changes(changes, query)
 
   for _, match in query:iter_matches(parser:parse()[1]:root(), buf, start_row, end_row) do
 
