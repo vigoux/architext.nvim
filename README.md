@@ -1,5 +1,4 @@
-[![asciicast](https://asciinema.org/a/357784.svg)](https://asciinema.org/a/357784)
-
+# __This project has moved to [sourcehut](https://sr.ht/~vigoux/architext.nvim)__
 # architext.nvim
 
 A structural editing plugin for neovim, powered by treesitter.
